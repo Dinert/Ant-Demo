@@ -7,6 +7,7 @@
         :getPopupContainer="getPopupContainer"
         :open="isOpen"
         @dropdownVisibleChange="dropdownVisibleChange"
+        ref="drop"
       >
         <div slot="dropdownRender" slot-scope="menu">
           <v-nodes :vnodes="menu" />
@@ -24,14 +25,6 @@
               @dropdownVisibleChange="dropdownVisibleChange2"
               ref="drop2"
             >
-              <div slot="aaaa" slot-scope="menu">
-                <v-nodes :vnodes2="menu" />
-                <a-divider style="margin: 4px 0" />
-                <div
-                  style="padding: 4px 8px; cursor: pointer"
-                  @mousedown="(e) => e.preventDefault()"
-                ></div>
-              </div>
               <a-select-option v-for="item in items2" :key="item" :value="item">
                 {{ item }}
               </a-select-option>
@@ -64,6 +57,7 @@ export default {
     items2: ["jack", "lucy"],
     isOpen: false,
     isOpen2: false,
+    dom: null
   }),
   methods: {
     addItem() {
@@ -73,22 +67,22 @@ export default {
     getPopupContainer(trigger) {
       return trigger.parentNode;
     },
-    dropdownVisibleChange(open) {
-      this.isOpen = !this.isOpen;
+    dropdownVisibleChange() {
+        // if (this.dom === this.$refs.drop.$el) {
+          this.isOpen = !this.isOpen;
+        // }
     },
-    dropdownVisibleChange2(open, e) {
-      this.$children.map((item) => {
-        if (item.$el === this.$refs.drop2.$el) {
+    dropdownVisibleChange2() {
+        // if (this.dom === this.$refs.drop.$el) {
           this.isOpen2 = !this.isOpen2;
-        }
-      });
-    },
+        // }
+    }
   },
 };
 </script>
 
 <style lang="less" scoped>
 .demo > div {
-  margin: 500px 0;
+//   margin: 500px 0;
 }
 </style>

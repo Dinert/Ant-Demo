@@ -46,7 +46,7 @@
 
 <template>
   <section class="home">
-    <header class="home-header">Dinert---设计器</header>
+    <header class="home-header" @click="headerClick">Dinert---设计器</header>
     <main class="home-main">
       <div class="home-main-left">
         <Drag :options="options1" class="home-main-left-drag"></Drag>
@@ -54,8 +54,12 @@
       </div>
       <main class="home-main-content">
         <Drag class="home-main-content-drag" :options="options2"></Drag>
+        <div>{{JSON.stringify(options2)}}</div>
       </main>
-      <div class="home-main-right">我是右边的元素</div>
+      <div class="home-main-right">
+        我是右边的元素
+        <input type="text" v-model="options2[0].list[0].name">
+      </div>
     </main>
     <footer class="home-footer" v-if="isFooter">底部</footer>
   </section>
@@ -133,9 +137,9 @@ export default {
       options2: [
         {
           list: [
-            { name: "Juan", id: 5 },
-            { name: "Edgard", id: 6 },
-            { name: "Johnson", id: 7 },
+            { type: 'input', name: "Juan", id: 5, tag:'a-input', placeholder: '请输入', labelCol: { span: 4 }, wrapperCol: { span: 14 } },
+            { type: 'input', name: "Edgard", id: 6, tag: 'a-input',placeholder: '请输入' , labelCol: { span: 4 }, wrapperCol: { span: 14 } },
+            { type: 'input', name: "Johnson", id: 7, tag: 'a-input',placeholder: '请输入' , labelCol: { span: 4 }, wrapperCol: { span: 14 } },
           ],
           event: {
             change: "change",
@@ -147,13 +151,22 @@ export default {
           id: Math.random(),
           form: {
             layout: "horizontal",
+
           }
         },
       ],
       isFooter: false,
     };
   },
-  methods: {},
+  methods: {
+    headerClick() {
+      this.options2[0].form.layout = 'vertical';
+      this.$set(this.options2, 0, this.options2[0]);
+
+      this.options2[0].list[0].name = 'input222222';
+      this.$set(this.options2, 0, this.options2[0]);
+    }
+  },
   components: {
     Drag,
   },

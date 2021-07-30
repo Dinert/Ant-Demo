@@ -37,13 +37,14 @@
     >
     <template v-if="option.form">
       <transition-group class="draggable-group" tag="a-form" name="list">
-        <a-form-item
+        <!-- <a-form-item
           class="draggable-group-list"
           v-for="list in option.list"
           :key="list.id"
         >
           {{ list.name }}
-        </a-form-item>
+        </a-form-item> -->
+        <FormItem class="draggable-group-list" :list='list' v-for="list in option.list" :key='list.id'/>
       </transition-group>
     </template>
     <template v-else>
@@ -73,8 +74,12 @@ export default {
       required: true,
     },
   },
+  updated() {
+    console.log(this.options, 'Drag');
+  },
   components: {
     draggable,
+    FormItem: () => import('../DFormItem/index.vue')
   },
 };
 </script>

@@ -1,18 +1,161 @@
+<style lang="less" scoped>
+.home {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  &-header,
+  &-footer {
+    font-size: 18px;
+    color: #fff;
+    background-color: #13c2c2;
+    font-weight: bold;
+  }
+  &-header {
+    line-height: 56px;
+  }
+  &-main {
+    flex: 1;
+    display: flex;
+    margin: 5px;
+    height: calc(100% - 66px);
+    &-left {
+      width: 270px;
+      border: 1px solid #d9d9d9;
+      &-drag{
+        height: 50%;
+      }
+    }
+    &-content {
+      flex: 1;
+      border: 1px solid #d9d9d9;
+      margin: 0 5px;
+      overflow-y: auto;
+      height: 100%;
+    }
+    &-right {
+      width: 260px;
+      border: 1px solid #d9d9d9;
+    }
+  }
+  &-footer {
+    line-height: 50px;
+  }
+}
+
+</style>
+
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <section class="home">
+    <header class="home-header">Dinert---设计器</header>
+    <main class="home-main">
+      <div class="home-main-left">
+        <Drag :options="options1" class="home-main-left-drag"></Drag>
+        <Drag :options="options1" class="home-main-left-drag"></Drag>
+      </div>
+      <main class="home-main-content">
+        <Drag class="home-main-content-drag" :options="options2"></Drag>
+      </main>
+      <div class="home-main-right">我是右边的元素</div>
+    </main>
+    <footer class="home-footer" v-if="isFooter">底部</footer>
+  </section>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
+import Drag from "@/components/Drag";
 export default {
-  name: 'Home',
+  name: "Home",
+  data() {
+    return {
+      options: [
+        {
+          list: [
+            { name: "John", id: 0 },
+            { name: "Joao", id: 1 },
+            { name: "Jean", id: 2 },
+            { name: "J32131", id: 3 },
+          ],
+          group: {
+            name: "drag",
+            pull: "clone",
+            put: false,
+          },
+          event: {
+            change: "change",
+          },
+          bind: {},
+          id: Math.random(),
+        },
+        {
+          list: [
+            { name: "Juan", id: 5 },
+            { name: "Edgard", id: 6 },
+            { name: "Johnson", id: 7 },
+          ],
+          // event: {
+          //   start: 'start',
+          //   end: 'end',
+          //   move: 'move'
+          // },
+          group: {
+            name: "drag",
+          },
+          bind: {},
+          id: Math.random(),
+        },
+      ],
+      options1: [
+        {
+          list: [
+            { name: "John", id: 0 },
+            { name: "Joao", id: 1 },
+            { name: "Jean", id: 2 },
+            { name: "J32131", id: 3 },
+          ],
+          group: {
+            name: "drag",
+            pull: "clone",
+            put: false,
+          },
+          event: {
+            change: "change",
+          },
+          bind: {},
+          clone: function ({ name }) {
+            return {
+              id: Math.random(),
+              name: name,
+            };
+          },
+          id: Math.random(),
+        },
+      ],
+      options2: [
+        {
+          list: [
+            { name: "Juan", id: 5 },
+            { name: "Edgard", id: 6 },
+            { name: "Johnson", id: 7 },
+          ],
+          event: {
+            change: "change",
+          },
+          group: {
+            name: "drag",
+          },
+          bind: {},
+          id: Math.random(),
+          form: {
+            layout: "horizontal",
+          }
+        },
+      ],
+      isFooter: false,
+    };
+  },
+  methods: {},
   components: {
-    HelloWorld
-  }
-}
+    Drag,
+  },
+};
 </script>

@@ -21,7 +21,7 @@
     &-left {
       width: 270px;
       border: 1px solid #d9d9d9;
-      &-drag{
+      &-drag {
         height: 50%;
       }
     }
@@ -41,7 +41,6 @@
     line-height: 50px;
   }
 }
-
 </style>
 
 <template>
@@ -53,12 +52,11 @@
         <Drag :options="options1" class="home-main-left-drag"></Drag>
       </div>
       <main class="home-main-content">
-        <Drag class="home-main-content-drag" :options="options2"></Drag>
-        <div>{{JSON.stringify(options2)}}</div>
+        <Drag class="home-main-content-drag" @change="change" :options="options2"></Drag>
       </main>
       <div class="home-main-right">
         我是右边的元素
-        <input type="text" v-model="options2[0].list[0].name">
+        <input type="text" v-model="options2.list[options2.index].name" />
       </div>
     </main>
     <footer class="home-footer" v-if="isFooter">底部</footer>
@@ -71,100 +69,122 @@ export default {
   name: "Home",
   data() {
     return {
-      options: [
-        {
-          list: [
-            { name: "John", id: 0 },
-            { name: "Joao", id: 1 },
-            { name: "Jean", id: 2 },
-            { name: "J32131", id: 3 },
-          ],
-          group: {
-            name: "drag",
-            pull: "clone",
-            put: false,
+      options1: {
+        list: [
+          {
+            type: "input",
+            name: "Joao",
+            id: 0,
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
           },
-          event: {
-            change: "change",
+          {
+            type: "input",
+            name: "2222222222222",
+            id: 1,
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
           },
-          bind: {},
-          id: Math.random(),
+          {
+            type: "input",
+            name: "3333333333333",
+            id: 2,
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
+          },
+          {
+            type: "input",
+            name: "444444444444",
+            id: 3,
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
+          },
+        ],
+        group: {
+          name: "drag",
+          pull: "clone",
+          put: false,
         },
-        {
-          list: [
-            { name: "Juan", id: 5 },
-            { name: "Edgard", id: 6 },
-            { name: "Johnson", id: 7 },
-          ],
-          // event: {
-          //   start: 'start',
-          //   end: 'end',
-          //   move: 'move'
-          // },
-          group: {
-            name: "drag",
-          },
-          bind: {},
-          id: Math.random(),
+        event: {
+          change: "change",
         },
-      ],
-      options1: [
-        {
-          list: [
-            { name: "John", id: 0 },
-            { name: "Joao", id: 1 },
-            { name: "Jean", id: 2 },
-            { name: "J32131", id: 3 },
-          ],
-          group: {
-            name: "drag",
-            pull: "clone",
-            put: false,
-          },
-          event: {
-            change: "change",
-          },
-          bind: {},
-          clone: function ({ name }) {
-            return {
-              id: Math.random(),
-              name: name,
-            };
-          },
-          id: Math.random(),
-        },
-      ],
-      options2: [
-        {
-          list: [
-            { type: 'input', name: "Juan", id: 5, tag:'a-input', placeholder: '请输入', labelCol: { span: 4 }, wrapperCol: { span: 14 } },
-            { type: 'input', name: "Edgard", id: 6, tag: 'a-input',placeholder: '请输入' , labelCol: { span: 4 }, wrapperCol: { span: 14 } },
-            { type: 'input', name: "Johnson", id: 7, tag: 'a-input',placeholder: '请输入' , labelCol: { span: 4 }, wrapperCol: { span: 14 } },
-          ],
-          event: {
-            change: "change",
-          },
-          group: {
-            name: "drag",
-          },
-          bind: {},
-          id: Math.random(),
-          form: {
-            layout: "horizontal",
-
+        bind: {},
+        clone: function (obj) {
+          let result = {}
+          for(var prop in obj) {
+            result[prop] = obj[prop];
           }
+          result['id'] = Math.random();
+          return result;
         },
-      ],
+        id: Math.random(),
+      },
+      options2: {
+        list: [
+          {
+            type: "input",
+            name: "Juan",
+            id: 5,
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
+          },
+          {
+            type: "input",
+            name: "Edgard",
+            id: 6,
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
+          },
+          {
+            type: "input",
+            name: "Johnson",
+            id: 7,
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
+          },
+        ],
+        event: {
+          change: "change",
+        },
+        group: {
+          name: "drag",
+        },
+        bind: {},
+        id: Math.random(),
+        form: {
+          layout: "horizontal",
+        },
+        index: 0
+      },
       isFooter: false,
     };
   },
   methods: {
     headerClick() {
-      this.options2[0].form.layout = 'vertical';
-      this.$set(this.options2, 0, this.options2[0]);
-
-      this.options2[0].list[0].name = 'input222222';
-      this.$set(this.options2, 0, this.options2[0]);
+      this.options2.form.layout = "vertical";
+      this.options2.list[0].name = "input222222";
+      this.options2.list.push(         {
+            type: "input",
+            name: "Johnson",
+            id: Math.random(),
+            placeholder: "请输入",
+            labelCol: { span: 2 },
+            wrapperCol: { span: 22 },
+          })
+      this.$set(this.options2, 0, this.options2);
+      setTimeout(() => {
+        this.options2.index = this.options2.list.length - 1;
+      }, 0);
+    },
+    change(added) {
+      console.log(added);
     }
   },
   components: {

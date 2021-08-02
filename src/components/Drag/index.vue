@@ -2,14 +2,19 @@
 .list-move {
   transition: transform 0.5s;
 }
-.draggable-wrap {
+.draggable-root {
   height: 100%;
-  .draggable {
+  .draggable-wrap {
     height: 100%;
-    &-group {
+    background-color: #fafafa;
+    .draggable {
       height: 100%;
-      &-list {
-        cursor: move;
+      &-group {
+        height: 100%;
+        padding: 10px 5px;
+        &-list {
+          cursor: move;
+        }
       }
     }
   }
@@ -17,49 +22,86 @@
 </style>
 
 <template>
-  <div class="draggable-wrap">
-    <draggable
-      class="draggable"
-      v-for="option in options"
-      :key="option.id"
-      v-model="option.list"
-      :group="option.group"
-      :clone='option.clone'
-      v-bind="option.bind"
-      @move="$emit((option.event && option.event.move) || 'move', $event)"
-      @start="$emit((option.event && option.event.start) || 'start', $event)"
-      @end="$emit((option.event && option.event.end) || 'end', $event)"
-      @add="$emit((option.event && option.event.add) || 'add', $event)"
-      @change="$emit((option.event && option.event.change) || 'change', $event)"
-      @remove="$emit((option.event && option.event.remove) || 'remove', $event)"
-      @update="$emit((option.event && option.event.update) || 'update', $event)"
-      @sort="$emit((option.event && option.event.sort) || 'sort', $event)"
-    >
-    <template v-if="option.form">
-      <transition-group class="draggable-group" tag="a-form" name="list">
-        <!-- <a-form-item
-          class="draggable-group-list"
-          v-for="list in option.list"
-          :key="list.id"
+  <div class="draggable-root">
+    <template v-if="options.form">
+      <a-form :layout="options.form.layout" class="draggable-wrap">
+        <draggable
+          class="draggable"
+          :key="options.id"
+          v-model="options.list"
+          :group="options.group"
+          :clone="options.clone"
+          v-bind="options.bind"
+          @move="$emit((options.event && options.event.move) || 'move', $event)"
+          @start="
+            $emit((options.event && options.event.start) || 'start', $event)
+          "
+          @end="$emit((options.event && options.event.end) || 'end', $event)"
+          @add="$emit((options.event && options.event.add) || 'add', $event)"
+          @change="
+            $emit((options.event && options.event.change) || 'change', $event)
+          "
+          @remove="
+            $emit((options.event && options.event.remove) || 'remove', $event)
+          "
+          @update="
+            $emit((options.event && options.event.update) || 'update', $event)
+          "
+          @sort="$emit((options.event && options.event.sort) || 'sort', $event)"
         >
-          {{ list.name }}
-        </a-form-item> -->
-        <FormItem class="draggable-group-list" :list='list' v-for="list in option.list" :key='list.id'/>
-      </transition-group>
+          <transition-group tag="div" class="draggable-group" name="list">
+            <FormItem
+              :class="['draggable-group-list', options.index === index ? 'active' : '']"
+              :list="list"
+              v-for="(list, index) in options.list"
+              :key="list.id"
+              :index='index'
+              @change-index="changeIndex(index)"
+              @copy-index="copyIndex(list, index)"
+              @delete-index="deleteIndex(index)"
+            />
+          </transition-group>
+        </draggable>
+      </a-form>
     </template>
     <template v-else>
-      <transition-group class="draggable-group" tag="ul" name="list">
-        <li
-          class="draggable-group-list"
-          v-for="list in option.list"
-          :key="list.id"
+      <div class="draggable-wrap">
+        <draggable
+          class="draggable"
+          :key="options.id"
+          v-model="options.list"
+          :group="options.group"
+          :clone="options.clone"
+          v-bind="options.bind"
+          @move="$emit((options.event && options.event.move) || 'move', $event)"
+          @start="
+            $emit((options.event && options.event.start) || 'start', $event)
+          "
+          @end="$emit((options.event && options.event.end) || 'end', $event)"
+          @add="$emit((options.event && options.event.add) || 'add', $event)"
+          @change="
+            $emit((options.event && options.event.change) || 'change', $event)
+          "
+          @remove="
+            $emit((options.event && options.event.remove) || 'remove', $event)
+          "
+          @update="
+            $emit((options.event && options.event.update) || 'update', $event)
+          "
+          @sort="$emit((options.event && options.event.sort) || 'sort', $event)"
         >
-          {{ list.name }}
-        </li>
-      </transition-group>
+          <transition-group class="draggable-group" tag="ul" name="list">
+            <li
+              class="draggable-group-list"
+              v-for="list in options.list"
+              :key="list.id"
+            >
+              {{ list.name }}
+            </li>
+          </transition-group>
+        </draggable>
+      </div>
     </template>
-
-    </draggable>
   </div>
 </template>
 
@@ -70,16 +112,35 @@ export default {
   name: "Drag",
   props: {
     options: {
-      type: Array,
+      type: Object,
       required: true,
     },
   },
+  methods: {
+    changeIndex(index) { 
+      this.options.index = index;
+    },
+    deleteIndex(index) {
+      this.options.list.splice(index, 1);
+      this.options.index = index ? index - 1 : index;
+    },
+    copyIndex(list, index) {
+      let result = {};
+      let newIndex = index + 1;
+      for(var prop in list) {
+        result[prop] = list[prop];
+      }
+      result.id = Math.random();
+      this.options.list.splice(newIndex, 0, result);
+      this.options.index = newIndex;
+    }
+  },
   updated() {
-    console.log(this.options, 'Drag');
+    // console.log(this.options, "Drag");
   },
   components: {
     draggable,
-    FormItem: () => import('../DFormItem/index.vue')
+    FormItem: () => import("../DFormItem/index.vue"),
   },
 };
 </script>

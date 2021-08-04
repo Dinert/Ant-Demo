@@ -95,7 +95,7 @@ export default {
     },
     deleteIndex(index) {
       this.draggable.list.splice(index, 1);
-      this.draggable.index = index;
+      this.draggable.index = index === this.draggable.list.length ? index - 1 : index;
     },
     copyIndex(list, index) {
       let result = {};

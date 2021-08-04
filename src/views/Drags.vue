@@ -43,7 +43,7 @@ export default {
     };
   },
   mounted() {
-    document.getElementsByClassName('ant-cascader-picker')[0].click()
+    // document.getElementsByClassName('ant-cascader-picker')[0].click()
   },
   methods: {
     onChange(value) {

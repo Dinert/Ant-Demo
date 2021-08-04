@@ -4,9 +4,10 @@ import router from './router'
 import store from './store'
 import './plugins/index'
 
-import './assets/style/css/index.css'
-import './assets/style/less/index.less'
+import './assets/style/css/index.css';
+import './assets/style/less/index.less';
 
+  
 Vue.config.productionTip = false
 
 new Vue({

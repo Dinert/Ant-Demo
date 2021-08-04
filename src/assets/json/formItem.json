@@ -1,0 +1,28 @@
+[
+    {
+        "type": "input",
+        "label": "输入框",
+        "icon": "icon-write",
+        "options": {
+            "type": "text",
+            "width": "100%",
+            "defaultValue": "",
+            "placeholder": "请输入",
+            "clearable": false,
+            "maxLength": null,
+            "addonBefore": "",
+            "addonAfter": "",
+            "hidden": false,
+            "disabled": false
+        },
+        "model": "",
+        "key": "",
+        "help": "",
+        "rules": [
+            {
+                "required": false,
+                "message": "必填项"
+            }
+        ]
+    }
+]

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Button, Form, Input, Radio, Dropdown, Menu, Icon, TreeSelect, Cascader, Select, Divider} from 'ant-design-vue';
+import { Button, Form, Input, Radio, Dropdown, Menu, Icon, TreeSelect, Cascader, Select, Divider, Collapse} from 'ant-design-vue';
 
 Vue.component(Button.name, Button);
 Vue.component(Form.name, Form);
@@ -17,3 +17,5 @@ Vue.component(Cascader.name, Cascader);
 Vue.component(Select.name, Select);
 Vue.component(Select.Option.name, Select.Option);
 Vue.component(Divider.name, Divider);
+Vue.component(Collapse.name, Collapse);
+Vue.component(Collapse.Panel.name, Collapse.Panel);

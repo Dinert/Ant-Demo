@@ -22,15 +22,25 @@
       width: 270px;
       border: 1px solid #d9d9d9;
       &-drag {
-        height: 50%;
+        height: 100%;
       }
     }
     &-content {
+      @headHeight: 50px;
+
       flex: 1;
       border: 1px solid #d9d9d9;
       margin: 0 5px;
-      overflow-y: auto;
       height: 100%;
+      &-header {
+        line-height: @headHeight;
+        border-bottom: 1px solid #d9d9d9;
+        height: @headHeight;
+      }
+      &-body {
+        height: calc(100% - @headHeight);
+        overflow: auto;
+      }
     }
     &-right {
       width: 260px;
@@ -48,15 +58,24 @@
     <header class="home-header" @click="headerClick">Dinert---设计器</header>
     <main class="home-main">
       <div class="home-main-left">
-        <Drag :options="options1" class="home-main-left-drag"></Drag>
-        <Drag :options="options1" class="home-main-left-drag"></Drag>
+        <CollapseDraggable :collapse="collapse" @add-list="addList" />
       </div>
       <main class="home-main-content">
-        <Drag class="home-main-content-drag" @change="change" :options="options2"></Drag>
+        <div class="home-main-content-header">
+          <DOperation></DOperation>
+        </div>
+        <div class="home-main-content-body">
+          <FormDraggable
+            class="home-main-content-body-drag"
+            @change="change"
+            :form="form"
+            @move="move"
+          />
+        </div>
       </main>
       <div class="home-main-right">
         我是右边的元素
-        <input type="text" v-model="options2.list[options2.index].name" />
+        <!-- <input type="text" v-model="form.draggable[form.draggable.index].label" /> -->
       </div>
     </main>
     <footer class="home-footer" v-if="isFooter">底部</footer>
@@ -64,131 +83,133 @@
 </template>
 
 <script>
-import Drag from "@/components/Drag";
 export default {
   name: "Home",
   data() {
     return {
-      options1: {
-        list: [
+      collapse: {
+        panel: [
           {
-            type: "input",
-            name: "Joao",
-            id: 0,
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
-          },
-          {
-            type: "input",
-            name: "2222222222222",
+            header: "表单组件",
             id: 1,
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
+            draggable: {
+              list: [
+                {
+                  type: "input",
+                  id: 0,
+                  label: "输入框",
+                  icon: "icon-Input",
+                  placeholder: "请输入",
+                  labelCol: { span: 2 },
+                  wrapperCol: { span: 22 },
+                },
+              ],
+              group: {
+                name: "drag",
+                pull: "clone",
+                put: false,
+              },
+              event: {
+                change: "change",
+              },
+              bind: {},
+              clone: function (obj) {
+                let result = {};
+                for (var prop in obj) {
+                  result[prop] = obj[prop];
+                }
+                result["id"] = Math.random();
+                return result;
+              },
+              id: Math.random(),
+            },
           },
-          {
-            type: "input",
-            name: "3333333333333",
-            id: 2,
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
-          },
-          {
-            type: "input",
-            name: "444444444444",
-            id: 3,
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
-          },
+          { header: "自定义组件", id: 2 },
+          { header: "布局组件", id: 3 },
         ],
-        group: {
-          name: "drag",
-          pull: "clone",
-          put: false,
-        },
-        event: {
-          change: "change",
-        },
-        bind: {},
-        clone: function (obj) {
-          let result = {}
-          for(var prop in obj) {
-            result[prop] = obj[prop];
-          }
-          result['id'] = Math.random();
-          return result;
-        },
-        id: Math.random(),
       },
-      options2: {
-        list: [
-          {
-            type: "input",
-            name: "Juan",
-            id: 5,
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
+      form: {
+        layout: "horizontal",
+        draggable: {
+          event: {
+            change: "change",
           },
-          {
-            type: "input",
-            name: "Edgard",
-            id: 6,
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
+          group: {
+            name: "drag",
           },
-          {
-            type: "input",
-            name: "Johnson",
-            id: 7,
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
-          },
-        ],
-        event: {
-          change: "change",
-        },
-        group: {
-          name: "drag",
-        },
-        bind: {},
-        id: Math.random(),
-        form: {
-          layout: "horizontal",
-        },
-        index: 0
+          bind: {},
+          id: Math.random(),
+          sort: true,
+          index: 0,
+          list: [
+            {
+              type: "input",
+              label: "输入框",
+              id: 5,
+              placeholder: "请输入",
+              label: "输入框",
+              labelCol: { span: 2 },
+              wrapperCol: { span: 22 },
+            },
+            {
+              type: "input",
+              id: 6,
+              label: "输入框",
+              placeholder: "请输入",
+              labelCol: { span: 2 },
+              wrapperCol: { span: 22 },
+            },
+            {
+              type: "input",
+              label: "输入框",
+              id: 7,
+              placeholder: "请输入",
+              labelCol: { span: 2 },
+              wrapperCol: { span: 22 },
+            },
+          ]
+        }
       },
       isFooter: false,
     };
   },
   methods: {
-    headerClick() {
-      this.options2.form.layout = "vertical";
-      this.options2.list[0].name = "input222222";
-      this.options2.list.push(         {
-            type: "input",
-            name: "Johnson",
-            id: Math.random(),
-            placeholder: "请输入",
-            labelCol: { span: 2 },
-            wrapperCol: { span: 22 },
-          })
-      this.$set(this.options2, 0, this.options2);
-      setTimeout(() => {
-        this.options2.index = this.options2.list.length - 1;
-      }, 0);
+    move(e) {
+      console.log(e);
     },
-    change(added) {
-      console.log(added);
-    }
+    headerClick() {
+      if (this.form.layout === "horizontal") {
+        this.form.layout = "vertical";
+      } else if (this.form.layout === "vertical") {
+        this.form.layout = "inline";
+      } else {
+        this.form.layout = "horizontal";
+      }
+      this.$set(this.options2, 0, this.options2);
+    },
+    change({ moved, added }) {
+      if (moved && this.form.draggable.index !== moved.newIndex) {
+        this.form.draggable.index = moved.newIndex;
+      }
+      if (added) {
+        this.form.draggable.index = added.newIndex;
+      }
+    },
+    addList(list) {
+      let result = {};
+      for (let prop in list) {
+        result[prop] = list[prop];
+      }
+      result["id"] = Math.random();
+      this.form.draggable.list.push(result);
+      this.form.draggable.index = this.form.draggable.list.length - 1;
+    },
   },
   components: {
-    Drag,
+    CollapseDraggable: () => import("@/components/Drag/collapseDraggable.vue"),
+    FormDraggable: () => import("@/components/Drag/formDraggable.vue"),
+    DOperation: () => import("@/components/DOperation/index.vue"),
+    DCollapseItem: () => import("@/components/DCollapseItem/index.vue"),
   },
 };
 </script>

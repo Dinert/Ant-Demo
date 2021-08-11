@@ -43,7 +43,7 @@
       }
     }
     &-right {
-      width: 260px;
+      width: 300px;
       border: 1px solid #d9d9d9;
     }
   }
@@ -55,7 +55,7 @@
 
 <template>
   <section class="home">
-    <header class="home-header" @click="headerClick">Dinert---设计器</header>
+    <header class="home-header">Dinert---设计器</header>
     <main class="home-main">
       <div class="home-main-left">
         <CollapseDraggable :collapse="collapse" @add-list="addList" />
@@ -74,8 +74,7 @@
         </div>
       </main>
       <div class="home-main-right">
-        我是右边的元素
-        <!-- <input type="text" v-model="form.draggable[form.draggable.index].label" /> -->
+        <DFormProperty :property="property" @handleFormLayoutChange="handleFormLayoutChange"/>
       </div>
     </main>
     <footer class="home-footer" v-if="isFooter">底部</footer>
@@ -118,10 +117,10 @@ export default {
                 for (var prop in obj) {
                   result[prop] = obj[prop];
                 }
-                result["id"] = Math.random();
+                result["id"] = result.type + "_" + new Date().valueOf();
                 return result;
               },
-              id: Math.random(),
+              id: new Date().valueOf(),
             },
           },
           { header: "自定义组件", id: 2 },
@@ -141,34 +140,27 @@ export default {
           id: Math.random(),
           sort: true,
           index: 0,
-          list: [
-            {
-              type: "input",
-              label: "输入框",
-              id: 5,
-              placeholder: "请输入",
-              label: "输入框",
-              labelCol: { span: 2 },
-              wrapperCol: { span: 22 },
-            },
-            {
-              type: "input",
-              id: 6,
-              label: "输入框",
-              placeholder: "请输入",
-              labelCol: { span: 2 },
-              wrapperCol: { span: 22 },
-            },
-            {
-              type: "input",
-              label: "输入框",
-              id: 7,
-              placeholder: "请输入",
-              labelCol: { span: 2 },
-              wrapperCol: { span: 22 },
-            },
-          ]
+          list: []
         }
+      },  
+      property: {
+        tabPanes: [
+          {
+            key: 1,
+            tab: '表单属性设置',
+            name: 'form',
+            form: {
+              layout: 'vertical',
+              
+            }
+          },
+          {
+            key: 2,
+            tab: '控件属性设置',
+            name: 'control'
+          }
+        ],
+        defaultKey: 1,
       },
       isFooter: false,
     };
@@ -176,16 +168,6 @@ export default {
   methods: {
     move(e) {
       console.log(e);
-    },
-    headerClick() {
-      if (this.form.layout === "horizontal") {
-        this.form.layout = "vertical";
-      } else if (this.form.layout === "vertical") {
-        this.form.layout = "inline";
-      } else {
-        this.form.layout = "horizontal";
-      }
-      this.$set(this.options2, 0, this.options2);
     },
     change({ moved, added }) {
       if (moved && this.form.draggable.index !== moved.newIndex) {
@@ -200,16 +182,19 @@ export default {
       for (let prop in list) {
         result[prop] = list[prop];
       }
-      result["id"] = Math.random();
+      result["id"] = result.type + "_" + new Date().valueOf();
       this.form.draggable.list.push(result);
       this.form.draggable.index = this.form.draggable.list.length - 1;
     },
+    handleFormLayoutChange(e) {
+        this.form.layout = e.target.value;
+    }
   },
   components: {
     CollapseDraggable: () => import("@/components/Drag/collapseDraggable.vue"),
     FormDraggable: () => import("@/components/Drag/formDraggable.vue"),
     DOperation: () => import("@/components/DOperation/index.vue"),
-    DCollapseItem: () => import("@/components/DCollapseItem/index.vue"),
+    DFormProperty: () => import("@/components/DFormProperty/index.vue")
   },
 };
 </script>

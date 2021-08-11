@@ -72,54 +72,6 @@
         :clone="panel.draggable.clone"
         :sort="panel.draggable.sort"
         v-bind="panel.draggable.bind"
-        @move="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.move) || 'move',
-            $event
-          )
-        "
-        @start="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.start) || 'start',
-            $event
-          )
-        "
-        @end="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.end) || 'end',
-            $event
-          )
-        "
-        @add="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.add) || 'add',
-            $event
-          )
-        "
-        @change="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.change) || 'change',
-            $event
-          )
-        "
-        @remove="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.remove) || 'remove',
-            $event
-          )
-        "
-        @update="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.update) || 'update',
-            $event
-          )
-        "
-        @sort="
-          $emit(
-            (panel.draggable.event && panel.draggable.event.sort) || 'sort',
-            $event
-          )
-        "
       >
         <transition-group class="draggable-group" tag="ul" name="list">
           <li

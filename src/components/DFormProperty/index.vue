@@ -155,12 +155,12 @@
 
           <!-- 验证名称 -->
           <a-form-item :label="`验证名称${symbol}`">
-            <a-input placeholder="请输入" v-model="name"> </a-input>
+            <a-input placeholder="请输入" v-model="list.decorator.name"> </a-input>
           </a-form-item>
 
           <!-- 验证错误信息 -->
           <a-form-item :label="`验证错误信息${symbol}`">
-            <a-input placeholder="请输入" v-model="message"> </a-input>
+            <a-input placeholder="请输入" v-model="list.decorator.rules[0].message"> </a-input>
           </a-form-item>
         </a-form>
         <div v-else>
@@ -188,28 +188,6 @@ export default {
     return {
       symbol: "：",
     };
-  },
-  computed: {
-    name: {
-      get() {
-        return this.list.decorator.name;
-      },
-      set(value) {
-        let decorator = _.cloneDeep(this.list.decorator);
-        decorator["name"] = value;
-        this.list.decorator = decorator;
-      },
-    },
-    message: {
-      get() {
-        return this.list.decorator.rules[0].message;
-      },
-      set(value) {
-        let decorator = _.cloneDeep(this.list.decorator);
-        decorator.rules[0].message = value;
-        this.list.decorator = decorator;
-      },
-    },
   },
   methods: {
     changeKey(key) {
@@ -240,13 +218,10 @@ export default {
         this.list.clear = false;
       }
 
-      let decorator = _.cloneDeep(this.list.decorator);
       if (e.indexOf("required") !== -1) {
-        decorator.rules[0].required = true;
-        this.list.decorator = decorator;
+        this.list.decorator.rules[0].required = true;
       } else {
-        decorator.rules[0].required = false;
-        this.list.decorator = decorator;
+        this.list.decorator.rules[0].required = false;
       }
     },
   },

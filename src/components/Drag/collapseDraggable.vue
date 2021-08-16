@@ -1,7 +1,4 @@
 <style lang="less" scoped>
-.list-move {
-  transition: transform 0.5s;
-}
 .draggable-wrap {
   height: 100%;
   background-color: #fff;
@@ -77,7 +74,8 @@
           <li
             class="draggable-group-list"
             v-for="list in panel.draggable.list"
-            :key="list.id"
+            :title="list.label"
+            :key="list.key"
             @click="$emit('add-list', list)"
           >
             <svg v-if="list.icon" class="icon" aria-hidden="true">

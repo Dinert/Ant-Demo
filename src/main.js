@@ -3,12 +3,14 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './plugins/index'
+import _ from 'lodash';
 
 import './assets/style/css/index.css';
 import './assets/style/less/index.less';
 
   
 Vue.config.productionTip = false
+Vue.prototype._ = _;
 
 new Vue({
   router,

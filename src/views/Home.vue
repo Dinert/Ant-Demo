@@ -74,7 +74,11 @@
         </div>
       </main>
       <div class="home-main-right">
-        <DFormProperty :property="property" @handleFormLayoutChange="handleFormLayoutChange"/>
+        <DFormProperty
+          :property="property"
+          @handleFormLayoutChange="handleFormLayoutChange"
+          :list="list"
+        />
       </div>
     </main>
     <footer class="home-footer" v-if="isFooter">底部</footer>
@@ -95,12 +99,31 @@ export default {
               list: [
                 {
                   type: "input",
-                  id: 0,
+                  value: "",
+                  key: 0,
                   label: "输入框",
-                  icon: "icon-Input",
+                  icon: "icon-shurukuang",
                   placeholder: "请输入",
                   labelCol: { span: 2 },
                   wrapperCol: { span: 22 },
+                  width: "100",
+                  widthUnit: "%",
+                  disabled: false,
+                  clear: false,
+                  hide: false,
+                  addonBefore: "",
+                  addonAfter: "",
+                  tooltip: "提示",
+                  prefix: "",
+                  suffix: "",
+                  checkedList: [],
+                  decorator: {
+                    name: 'input',
+                    rules: [{
+                      message: '请输入站点',
+                      required: true
+                    }]
+                  },
                 },
               ],
               group: {
@@ -111,12 +134,9 @@ export default {
               event: {
                 change: "change",
               },
-              bind: {},
               clone: function (obj) {
-                let result = {};
-                for (var prop in obj) {
-                  result[prop] = obj[prop];
-                }
+                let result = _.cloneDeep(obj);
+                result["key"] = result.type + "_" + new Date().valueOf();
                 result["id"] = result.type + "_" + new Date().valueOf();
                 return result;
               },
@@ -140,30 +160,40 @@ export default {
           id: Math.random(),
           sort: true,
           index: 0,
-          list: []
-        }
-      },  
+          list: [],
+        },
+      },
       property: {
         tabPanes: [
           {
             key: 1,
-            tab: '表单属性设置',
-            name: 'form',
+            tab: "表单属性设置",
+            name: "form",
             form: {
-              layout: 'vertical',
-              
-            }
+              layout: "vertical",
+            },
           },
           {
             key: 2,
-            tab: '控件属性设置',
-            name: 'control'
-          }
+            tab: "控件属性设置",
+            name: "control",
+            form: {
+              layout: "vertical",
+            },
+          },
         ],
-        defaultKey: 1,
+        key: 1,
       },
       isFooter: false,
     };
+  },
+  computed: {
+    list() {
+      if (this.form.draggable.list[this.form.draggable.index]) {
+        this.property.key = 2;
+      }
+      return this.form.draggable.list[this.form.draggable.index];
+    },
   },
   methods: {
     move(e) {
@@ -178,23 +208,21 @@ export default {
       }
     },
     addList(list) {
-      let result = {};
-      for (let prop in list) {
-        result[prop] = list[prop];
-      }
+      let result = _.cloneDeep(list);
+      result["key"] = result.type + "_" + new Date().valueOf();
       result["id"] = result.type + "_" + new Date().valueOf();
       this.form.draggable.list.push(result);
       this.form.draggable.index = this.form.draggable.list.length - 1;
     },
     handleFormLayoutChange(e) {
-        this.form.layout = e.target.value;
-    }
+      this.form.layout = e.target.value;
+    },
   },
   components: {
     CollapseDraggable: () => import("@/components/Drag/collapseDraggable.vue"),
     FormDraggable: () => import("@/components/Drag/formDraggable.vue"),
     DOperation: () => import("@/components/DOperation/index.vue"),
-    DFormProperty: () => import("@/components/DFormProperty/index.vue")
+    DFormProperty: () => import("@/components/DFormProperty/index.vue"),
   },
 };
 </script>

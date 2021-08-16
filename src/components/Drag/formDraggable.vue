@@ -1,7 +1,4 @@
 <style lang="less" scoped>
-.list-move {
-  transition: transform 0.5s;
-}
 .draggable-wrap {
   height: 100%;
   background-color: #fafafa;
@@ -13,6 +10,15 @@
       }
     }
   }
+  &.ant-form-horizontal::v-deep .draggable-group-list-item {
+    display: flex;
+    .ant-form-item-label {
+      width: 100px;
+    }
+    .ant-form-item-control-wrapper {
+      flex: 1;
+    }
+  }
   .draggable {
     height: 100%;
     &-group {
@@ -21,6 +27,7 @@
       &-list {
         cursor: move;
         padding-bottom: 5px;
+        min-height: 50px;
       }
     }
   }
@@ -28,7 +35,11 @@
 </style>
 
 <template>
-  <a-form :layout="form.layout" class="draggable-wrap draggable-form">
+  <a-form
+    :layout="form.layout"
+    :form="form2"
+    class="draggable-wrap draggable-form"
+  >
     <draggable
       class="draggable"
       :key="draggable.id"
@@ -38,7 +49,9 @@
       :sort="draggable.sort"
       v-bind="draggable.bind"
       @move="$emit((draggable.event && draggable.event.move) || 'move', $event)"
-      @start="$emit((draggable.event && draggable.event.start) || 'start', $event)"
+      @start="
+        $emit((draggable.event && draggable.event.start) || 'start', $event)
+      "
       @end="$emit((draggable.event && draggable.event.end) || 'end', $event)"
       @add="$emit((draggable.event && draggable.event.add) || 'add', $event)"
       @change="
@@ -60,7 +73,7 @@
           ]"
           :list="list"
           v-for="(list, index) in draggable.list"
-          :key="list.id"
+          :key="list.key"
           :form="form"
           @change-index="changeIndex(index)"
           @copy-index="copyIndex(list, index)"
@@ -68,6 +81,9 @@
         />
       </transition-group>
     </draggable>
+    <a-button type="primary" html-type="submit" @click="handleClick">
+      Submit
+    </a-button>
   </a-form>
 </template>
 
@@ -82,12 +98,14 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      form2: this.$form.createForm(this, { name: "coordinated" }),
+    };
   },
   computed: {
     draggable() {
       return this.form.draggable;
-    }
+    },
   },
   methods: {
     changeIndex(index) {
@@ -95,7 +113,8 @@ export default {
     },
     deleteIndex(index) {
       this.draggable.list.splice(index, 1);
-      this.draggable.index = index === this.draggable.list.length ? index - 1 : index;
+      this.draggable.index =
+        index === this.draggable.list.length ? index - 1 : index;
     },
     copyIndex(list, index) {
       let result = {};
@@ -103,9 +122,17 @@ export default {
       for (var prop in list) {
         result[prop] = list[prop];
       }
-      result.id = Math.random();
+      result["key"] = result.type + "_" + new Date().valueOf();
+      result["id"] = result.type + "_" + new Date().valueOf();
       this.draggable.list.splice(newIndex, 0, result);
       // this.options.index = newIndex;
+    },
+    handleClick(e) {
+      this.form2.validateFields((err) => {
+        if (!err) {
+          console.info("success");
+        }
+      });
     },
   },
   components: {

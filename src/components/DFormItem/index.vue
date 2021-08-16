@@ -16,7 +16,7 @@
     outline-offset: 0;
 
     .draggable-group-list-copy,
-    .draggable-group-list-delete{
+    .draggable-group-list-delete {
       opacity: 1;
       pointer-events: unset;
     }
@@ -26,7 +26,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    -webkit-transition: all 0.3s;
     transition: all 0.3s;
     height: 5px;
     background-color: #13c2c2;
@@ -48,6 +47,7 @@
     font-size: 14px;
     z-index: 999;
     color: #13c2c2;
+    transition: unset 0;
   }
   &-copy,
   &-delete {
@@ -60,7 +60,6 @@
     color: #fff;
     z-index: 2;
     cursor: pointer;
-    -webkit-transition: all 0.3s;
     transition: all 0.3s;
     background-color: #13c2c2;
     opacity: 0;
@@ -81,28 +80,38 @@
   <div @click.self="$emit('change-index')">
     <a-form-item
       class="draggable-group-list-item"
-      :label="list.label"
       :labelCol="labelCol"
       :wrapperCol="wrapperCol"
+      :class="[list.hide ? 'hide' : '']"
+      :style="{ width: cWidth }"
     >
-      <Input v-if="list.type === 'input'" :list="list" />
+      <span slot="label">
+        <a-tooltip>
+          <template slot="title" v-if="list.tooltip">
+            {{ list.tooltip }}
+          </template>
+          {{ list.label }}
+          <a-icon v-show="list.tooltip" type="question-circle" />
+        </a-tooltip>
+      </span>
+      <component
+        :is="asyncComponent"
+        :list="list"
+        v-decorator="[decorator.name, {
+          rules: decorator.rules  
+        }]"
+      ></component>
     </a-form-item>
+
     <div class="draggable-group-list-key">{{ list.id }}</div>
-    <div
-      class="draggable-group-list-copy"
-      @click="$emit('copy-index')"
-    >
+    <div class="draggable-group-list-copy" @click="$emit('copy-index')">
       <a-icon type="copy" />
     </div>
-    <div
-      class="draggable-group-list-delete"
-      @click="$emit('delete-index')"
-    >
+    <div class="draggable-group-list-delete" @click="$emit('delete-index')">
       <a-icon type="delete" />
     </div>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -115,30 +124,36 @@ export default {
     form: {
       type: Object,
       required: true,
-    }
+    },
   },
   data() {
     return {};
   },
   computed: {
     labelCol() {
-        if(this.form.layout !== 'horizontal') {
-          return {}
-        }
-        return this.list.labelCol;
+      if (this.form.layout !== "horizontal") {
+        return {};
+      }
+      return this.list.labelCol;
     },
     wrapperCol() {
-         if(this.form.layout !== 'horizontal') {
-          return {}
-        }
-        return this.list.wrapperCol;
+      if (this.form.layout !== "horizontal") {
+        return {};
+      }
+      return this.list.wrapperCol;
+    },
+    cWidth() {
+      return this.list.width ? this.list.width + this.list.widthUnit : "auto";
+    },
+    decorator() {
+      return this.list.decorator;
+    },
+    asyncComponent() {
+      return () => import('./' + this.list.type + '.vue'); 
     }
   },
   updated() {
     // console.log(this.list, "FormItem");
-  },
-  components: {
-    Input: () => import("./input.vue"),
-  },
+  }
 };
 </script>

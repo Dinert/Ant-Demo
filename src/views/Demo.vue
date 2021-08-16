@@ -1,88 +1,58 @@
 <template>
-  <div class="demo">
-    <div>
+  <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit">
+    <a-form-item label="Note">
+      <a-input
+        v-decorator="['note', { rules: [{ required: true, message: 'Please input your note!' }] }]"
+      />
+    </a-form-item>
+    <a-form-item label="Gender">
       <a-select
-        default-value="lucy"
-        style="width: 100%"
-        :getPopupContainer="getPopupContainer"
-        :open="isOpen"
-        @dropdownVisibleChange="dropdownVisibleChange"
-        ref="drop"
+        v-decorator="[
+          'gender',
+          { rules: [{ required: true, message: 'Please select your gender!' }] },
+        ]"
+        placeholder="Select a option and change input text above"
+        @change="handleSelectChange"
       >
-        <div slot="dropdownRender" slot-scope="menu">
-          <v-nodes :vnodes="menu" />
-          <a-divider style="margin: 4px 0" />
-          <div
-            style="padding: 4px 8px; cursor: pointer width: 100%;height: 100px;"
-            @mousedown="(e) => e.preventDefault()"
-          >
-            <a-select
-              default-value="jack"
-              style="width: 100%; height: 100px"
-              :getPopupContainer="getPopupContainer"
-              :key="'kkkk'"
-              :open="isOpen2"
-              @dropdownVisibleChange="dropdownVisibleChange2"
-              ref="drop2"
-            >
-              <a-select-option v-for="item in items2" :key="item" :value="item">
-                {{ item }}
-              </a-select-option>
-            </a-select>
-          </div>
-        </div>
-        <a-select-option v-for="item in items" :key="item" :value="item">
-          {{ item }}
+        <a-select-option value="male">
+          male
+        </a-select-option>
+        <a-select-option value="female">
+          female
         </a-select-option>
       </a-select>
-    </div>
-    <div></div>
-  </div>
+    </a-form-item>
+    <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
+      <a-button type="primary" html-type="submit">
+        Submit
+      </a-button>
+    </a-form-item>
+  </a-form>
 </template>
+
 <script>
-let index = 0;
 export default {
-  components: {
-    VNodes: {
-      functional: true,
-      render: (h, ctx) => ctx.props.vnodes,
-    },
-    VNodes2: {
-      functional: true,
-      render: (h, ctx) => ctx.props.vnodes,
-    },
+  data() {
+    return {
+      formLayout: 'horizontal',
+      form: this.$form.createForm(this, { name: 'coordinated' }),
+    };
   },
-  data: () => ({
-    items: ["jack", "lucy"],
-    items2: ["jack", "lucy"],
-    isOpen: false,
-    isOpen2: false,
-    dom: null
-  }),
   methods: {
-    addItem() {
-      console.log("addItem");
-      this.items.push(`New item ${index++}`);
+    handleSubmit(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values);
+        }
+      });
     },
-    getPopupContainer(trigger) {
-      return trigger.parentNode;
+    handleSelectChange(value) {
+      console.log(value);
+      this.form.setFieldsValue({
+        note: `Hi, ${value === 'male' ? 'man' : 'lady'}!`,
+      });
     },
-    dropdownVisibleChange() {
-        // if (this.dom === this.$refs.drop.$el) {
-          this.isOpen = !this.isOpen;
-        // }
-    },
-    dropdownVisibleChange2() {
-        // if (this.dom === this.$refs.drop.$el) {
-          this.isOpen2 = !this.isOpen2;
-        // }
-    }
   },
 };
 </script>
-
-<style lang="less" scoped>
-.demo > div {
-//   margin: 500px 0;
-}
-</style>

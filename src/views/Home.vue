@@ -7,7 +7,7 @@
   &-footer {
     font-size: 18px;
     color: #fff;
-    background-color: #13c2c2;
+    background-color: @primary-color;
     font-weight: bold;
   }
   &-header {
@@ -34,7 +34,7 @@
       height: 100%;
       &-header {
         line-height: @headHeight;
-        border-bottom: 1px solid #d9d9d9;
+        border-bottom: 2px solid #d9d9d9;
         height: @headHeight;
       }
       &-body {
@@ -51,6 +51,70 @@
     line-height: 50px;
   }
 }
+.clearModal .ant-modal-header i {
+  color: #faad14;
+}
+.clearModal .ant-modal-body p {
+  font-size: 16px;
+  margin-bottom: 0;
+}
+.previewModal {
+  &::v-deep .ant-modal-body {
+    .preview-group[layout="horizontal"] .preview-group-list-item {
+      display: flex;
+      .ant-form-item-label {
+        width: 100px;
+      }
+      .ant-form-item-control-wrapper {
+        flex: 1;
+      }
+    }
+    .preview-group[layout="vertical"] .preview-group-list-item {
+      text-align: left;
+    }
+    .preview-group[layout="inline"] {
+      text-align: left;
+      .preview-group-list {
+        display: inline-block;
+        margin: 10px 5px;
+      }
+    }
+
+    .preview-group {
+      &-list {
+        padding: 0px 20px;
+        margin: 10px 20px;
+        border: 1px dashed #e5e5e5;
+        &-item {
+          margin: 15px 0;
+        }
+      }
+    }
+  }
+}
+.importModal {
+  &::v-deep .ant-modal {
+    .importModal-title {
+      background-color: #e5e5e5;
+    }
+  }
+}
+.previewModal,
+.importModal {
+  &::v-deep .ant-modal {
+    height: 100%;
+    top: 0;
+    padding: 24px 0;
+    &-content {
+      height: 100%;
+      .ant-modal-body {
+        height: calc(100% - 108px);
+        overflow: auto;
+        padding: 0;
+      }
+    }
+  }
+}
 </style>
 
 <template>
@@ -62,14 +126,66 @@
       </div>
       <main class="home-main-content">
         <div class="home-main-content-header">
-          <DOperation></DOperation>
+          <DOperation @operation="operation">
+            <!-- 清空弹窗 -->
+            <Modal
+              :modal="modalClear"
+              @modal-ok="modalOkClear"
+              class="clearModal"
+            >
+              <template #title>
+                <a-icon type="question-circle" /> 警告
+              </template>
+              <template #content>
+                <p>是否清空所有内容</p>
+              </template>
+            </Modal>
+
+            <!-- 预览弹窗 -->
+            <Modal
+              :modal="modalPreview"
+              class="previewModal"
+              @modal-ok="modalOkPreview"
+            >
+              <template #title>预览</template>
+              <template #content>
+                <div class="preview-group" :layout="form.layout">
+                  <FormItem
+                    class="preview-group-list"
+                    v-for="(list, index) in form.draggable.list"
+                    :list="list"
+                    :key="list.key"
+                    :isOther="false"
+                    :form="form"
+                    @change-index="changeIndex(index)"
+                    @copy-index="copyIndex(list, index)"
+                    @delete-index="deleteIndex(index)"
+                  />
+                </div>
+              </template>
+            </Modal>
+            
+            <!-- 导入弹窗 -->
+            <Modal
+              :modal="modalImport"
+              class="importModal"
+              @modal-ok="modalOkImport"
+            >
+              <template #title> JSON数据 </template>
+              <template #content>
+                <p class="importModal-title">导入格式如下</p>
+                <a-upload accept="application/json" :showUploadList="false">
+                  <a-button type="primary"> 导入json文件 </a-button>
+                </a-upload>
+              </template>
+            </Modal>
+          </DOperation>
         </div>
         <div class="home-main-content-body">
           <FormDraggable
             class="home-main-content-body-drag"
             @change="change"
             :form="form"
-            @move="move"
           />
         </div>
       </main>
@@ -116,13 +232,15 @@ export default {
                   tooltip: "提示",
                   prefix: "",
                   suffix: "",
-                  checkedList: [],
+                  checkedList: ["required"],
                   decorator: {
-                    name: 'input',
-                    rules: [{
-                      message: '请输入站点',
-                      required: true
-                    }]
+                    name: "input",
+                    rules: [
+                      {
+                        message: "必填项",
+                        required: true,
+                      },
+                    ],
                   },
                 },
               ],
@@ -184,6 +302,58 @@ export default {
         ],
         key: 1,
       },
+      modalClear: {
+        mask: true,
+        closable: false,
+        keyboard: true,
+        title: true,
+        maskStyle: {},
+        cancelText: "否",
+        okText: "是",
+        okType: "primary",
+        visible: false,
+        wrapClassName: "",
+        destroyOnClose: false,
+        zIndex: 100,
+        dialogStyle: {},
+        dialogClass: "",
+      },
+      modalPreview: {
+        mask: true,
+        closable: true,
+        keyboard: true,
+        title: true,
+        maskStyle: {},
+        cancelText: "关闭",
+        okText: "获取数据",
+        okType: "primary",
+        visible: false,
+        wrapClassName: "",
+        zIndex: 100,
+        destroyOnClose: false,
+        dialogStyle: {
+          width: "90%",
+        },
+        dialogClass: "",
+      },
+      modalImport: {
+        mask: true,
+        closable: true,
+        keyboard: true,
+        title: true,
+        maskStyle: {},
+        cancelText: "关闭",
+        okText: "确定",
+        okType: "primary",
+        visible: false,
+        wrapClassName: "",
+        zIndex: 100,
+        destroyOnClose: false,
+        dialogStyle: {
+          width: "50%",
+        },
+        dialogClass: "",
+      },
       isFooter: false,
     };
   },
@@ -196,10 +366,8 @@ export default {
     },
   },
   methods: {
-    move(e) {
-      console.log(e);
-    },
     change({ moved, added }) {
+      // 组件改变时
       if (moved && this.form.draggable.index !== moved.newIndex) {
         this.form.draggable.index = moved.newIndex;
       }
@@ -208,14 +376,41 @@ export default {
       }
     },
     addList(list) {
+      // 添加组件
       let result = _.cloneDeep(list);
       result["key"] = result.type + "_" + new Date().valueOf();
       result["id"] = result.type + "_" + new Date().valueOf();
       this.form.draggable.list.push(result);
       this.form.draggable.index = this.form.draggable.list.length - 1;
     },
+    clearList(flag) {
+      if (flag !== "ok") {
+        this.modalClear.visible = true;
+      } else {
+        this.form.draggable.list = [];
+        this.modalClear.visible = false;
+      }
+    },
     handleFormLayoutChange(e) {
+      // 布局
       this.form.layout = e.target.value;
+    },
+    modalOkClear(e) {
+      this.clearList("ok");
+    },
+    modalOkPreview() {},
+    modalOkImport() {
+      this.modalImport.visible = false;
+    },
+    operation(e) {
+      let className = e.currentTarget.className;
+      if (className.indexOf("operation-ul-preview") !== -1) {
+        this.modalPreview.visible = true;
+      } else if (className.indexOf("operation-ul-clear") !== -1) {
+        this.modalClear.visible = true;
+      } else if (className.indexOf("operation-ul-lead") !== -1) {
+        this.modalImport.visible = true;
+      }
     },
   },
   components: {
@@ -223,6 +418,8 @@ export default {
     FormDraggable: () => import("@/components/Drag/formDraggable.vue"),
     DOperation: () => import("@/components/DOperation/index.vue"),
     DFormProperty: () => import("@/components/DFormProperty/index.vue"),
+    Modal: () => import("@/components/Common/modal.vue"),
+    FormItem: () => import("@/components/DFormItem/index.vue"),
   },
 };
 </script>

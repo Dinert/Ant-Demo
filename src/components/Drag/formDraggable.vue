@@ -10,7 +10,7 @@
       }
     }
   }
-  &.ant-form-horizontal::v-deep .draggable-group-list-item {
+  &[layout="horizontal"]::v-deep .draggable-group-list-item {
     display: flex;
     .ant-form-item-label {
       width: 100px;
@@ -18,6 +18,15 @@
     .ant-form-item-control-wrapper {
       flex: 1;
     }
+  }
+  &[layout="vertical"]::v-deep .draggable-group-list-item {
+    text-align: left;
+  }
+  &[layout="inline"]::v-deep .draggable-group{
+    text-align: left;
+  }
+  &[layout="inline"]::v-deep .draggable-group-list {
+    display: inline-block;
   }
   .draggable {
     height: 100%;
@@ -35,10 +44,9 @@
 </style>
 
 <template>
-  <a-form
+  <div
     :layout="form.layout"
-    :form="form2"
-    class="draggable-wrap draggable-form"
+    class="draggable-wrap"
   >
     <draggable
       class="draggable"
@@ -81,10 +89,7 @@
         />
       </transition-group>
     </draggable>
-    <a-button type="primary" html-type="submit" @click="handleClick">
-      Submit
-    </a-button>
-  </a-form>
+  </div>
 </template>
 
 <script>
@@ -117,11 +122,8 @@ export default {
         index === this.draggable.list.length ? index - 1 : index;
     },
     copyIndex(list, index) {
-      let result = {};
       let newIndex = index + 1;
-      for (var prop in list) {
-        result[prop] = list[prop];
-      }
+      let result = _.cloneDeep(list);
       result["key"] = result.type + "_" + new Date().valueOf();
       result["id"] = result.type + "_" + new Date().valueOf();
       this.draggable.list.splice(newIndex, 0, result);

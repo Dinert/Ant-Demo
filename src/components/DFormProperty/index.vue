@@ -153,14 +153,13 @@
             />
           </a-form-item>
 
-          <!-- 验证名称 -->
-          <a-form-item :label="`验证名称${symbol}`">
-            <a-input placeholder="请输入" v-model="list.decorator.name"> </a-input>
-          </a-form-item>
-
-          <!-- 验证错误信息 -->
-          <a-form-item :label="`验证错误信息${symbol}`">
-            <a-input placeholder="请输入" v-model="list.decorator.rules[0].message"> </a-input>
+          <!-- 验证错误提示信息 -->
+          <a-form-item :label="`验证错误提示信息${symbol}`">
+            <a-input
+              placeholder="请输入"
+              v-model="list.decorator.rules[0].message"
+            >
+            </a-input>
           </a-form-item>
         </a-form>
         <div v-else>
@@ -187,6 +186,7 @@ export default {
   data() {
     return {
       symbol: "：",
+      checkedList: []
     };
   },
   methods: {

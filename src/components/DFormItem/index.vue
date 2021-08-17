@@ -79,10 +79,9 @@
 <template>
   <div @click.self="$emit('change-index')">
     <a-form-item
-      class="draggable-group-list-item"
       :labelCol="labelCol"
       :wrapperCol="wrapperCol"
-      :class="[list.hide ? 'hide' : '']"
+      :class="[list.hide ? 'hide' : '', className + '-group-list-item']"
       :style="{ width: cWidth }"
     >
       <span slot="label">
@@ -97,19 +96,23 @@
       <component
         :is="asyncComponent"
         :list="list"
-        v-decorator="[decorator.name, {
-          rules: decorator.rules  
-        }]"
+        v-decorator="[
+          decorator.name + list.key,
+          {
+            rules: decorator.rules,
+          },
+        ]"
       ></component>
     </a-form-item>
-
-    <div class="draggable-group-list-key">{{ list.id }}</div>
-    <div class="draggable-group-list-copy" @click="$emit('copy-index')">
-      <a-icon type="copy" />
-    </div>
-    <div class="draggable-group-list-delete" @click="$emit('delete-index')">
-      <a-icon type="delete" />
-    </div>
+    <template v-if="isOther">
+      <div :class="[className + '-group-list-key']">{{ list.id }}</div>
+      <div :class="[className + '-group-list-copy']" @click="$emit('copy-index')">
+        <a-icon type="copy" />
+      </div>
+      <div :class="[className + '-group-list-delete']" @click="$emit('delete-index')">
+        <a-icon type="delete" />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -124,6 +127,10 @@ export default {
     form: {
       type: Object,
       required: true,
+    },
+    isOther: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -142,6 +149,9 @@ export default {
       }
       return this.list.wrapperCol;
     },
+    className() {
+      return this.isOther ? 'draggable' : 'preview';
+    },
     cWidth() {
       return this.list.width ? this.list.width + this.list.widthUnit : "auto";
     },
@@ -149,11 +159,11 @@ export default {
       return this.list.decorator;
     },
     asyncComponent() {
-      return () => import('./' + this.list.type + '.vue'); 
-    }
+      return () => import("./" + this.list.type + ".vue");
+    },
   },
   updated() {
     // console.log(this.list, "FormItem");
-  }
+  },
 };
 </script>

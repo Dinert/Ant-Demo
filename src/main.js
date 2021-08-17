@@ -7,6 +7,7 @@ import _ from 'lodash';
 
 import './assets/style/css/index.css';
 import './assets/style/less/index.less';
+import 'ant-design-vue/dist/antd.less'
 
   
 Vue.config.productionTip = false

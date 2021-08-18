@@ -1,5 +1,5 @@
 const path = require("path");
-
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 module.exports = {
   devServer: {
     port: 5000,
@@ -14,6 +14,11 @@ module.exports = {
       process.env.NODE_ENV === "development"
         ? "inline-source-map"
         : "cheap-module-source-map",
+    plugins: [
+      new MonacoWebpackPlugin({
+        languages: ['json', 'html', 'css', 'javascript', 'vue']
+      })
+    ]
   },
   pluginOptions: {
     // 第三方插件配置

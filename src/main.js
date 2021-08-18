@@ -9,9 +9,12 @@ import './assets/style/css/index.css';
 import './assets/style/less/index.less';
 import 'ant-design-vue/dist/antd.less'
 
+import tools from '@/utils/tools.js';
+
   
 Vue.config.productionTip = false
 Vue.prototype._ = _;
+Vue.prototype.$tools = tools;
 
 new Vue({
   router,

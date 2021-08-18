@@ -58,6 +58,24 @@
   font-size: 16px;
   margin-bottom: 0;
 }
+
+.previewModal,
+.importModal,
+.jsonModal   {
+  &::v-deep .ant-modal {
+    height: 100%;
+    top: 0;
+    padding: 24px 0;
+    &-content {
+      height: 100%;
+      .ant-modal-body {
+        height: calc(100% - 108px);
+        overflow: auto;
+        padding: 0;
+      }
+    }
+  }
+}
 .previewModal {
   &::v-deep .ant-modal-body {
     .preview-group[layout="horizontal"] .preview-group-list-item {
@@ -94,27 +112,40 @@
 }
 .importModal {
   &::v-deep .ant-modal {
-    .importModal-title {
-      background-color: #e5e5e5;
-    }
-  }
-}
-.previewModal,
-.importModal {
-  &::v-deep .ant-modal {
-    height: 100%;
-    top: 0;
-    padding: 24px 0;
     &-content {
-      height: 100%;
       .ant-modal-body {
-        height: calc(100% - 108px);
-        overflow: auto;
-        padding: 0;
+        overflow: hidden;
       }
     }
+    .importModal-title {
+      background-color: #e5e5e5;
+      margin-bottom: 0;
+    }
+    .monaco {
+      height: calc(100% - 21px);
+    }
   }
 }
+.jsonModal {
+  &::v-deep .ant-modal {
+    &-content {
+      .ant-modal-body {
+        overflow: hidden;
+      }
+      .ant-modal-footer{
+        text-align: center;
+      }
+    }
+    .jsonModal-title {
+      background-color: #e5e5e5;
+      margin-bottom: 0;
+    }
+    .monaco {
+      height: 100%;
+    }
+  }
+}
+
 </style>
 
 <template>
@@ -164,19 +195,46 @@
                 </div>
               </template>
             </Modal>
-            
+
             <!-- 导入弹窗 -->
-            <Modal
-              :modal="modalImport"
-              class="importModal"
-              @modal-ok="modalOkImport"
-            >
+            <Modal :modal="modalImport" class="importModal">
               <template #title> JSON数据 </template>
+
               <template #content>
                 <p class="importModal-title">导入格式如下</p>
-                <a-upload accept="application/json" :showUploadList="false">
+                <Monaco
+                  :monacoOptions="importMonacoOptions"
+                  ref="importMonaco"
+                />
+              </template>
+
+              <template #footer>
+                <a-upload
+                  accept="application/json"
+                  :showUploadList="false"
+                  style="margin-right: 10px"
+                >
                   <a-button type="primary"> 导入json文件 </a-button>
                 </a-upload>
+                <a-button @click="modalImport.visible = false">关闭</a-button>
+                <a-button type="primary" @click="modalOkImport">确定</a-button>
+              </template>
+            </Modal>
+
+            <!-- 生成JSON弹窗 -->
+            <Modal :modal="modalJSON" class="jsonModal">
+              <template #title> JSON数据 </template>
+
+              <template #content>
+                <Monaco
+                  :monacoOptions="JSONMonacoOptions"
+                  ref="monacoJSON"
+                />
+              </template>
+
+              <template #footer>
+                <a-button type="primary" @click='copyData'>复制数据</a-button>
+                <a-button type="primary" @click="exportData">导出数据</a-button>
               </template>
             </Modal>
           </DOperation>
@@ -206,6 +264,7 @@ export default {
   name: "Home",
   data() {
     return {
+      monacoEditor: {},
       collapse: {
         panel: [
           {
@@ -345,14 +404,54 @@ export default {
         cancelText: "关闭",
         okText: "确定",
         okType: "primary",
+        footer: true,
         visible: false,
         wrapClassName: "",
         zIndex: 100,
-        destroyOnClose: false,
+        destroyOnClose: true,
         dialogStyle: {
           width: "50%",
         },
         dialogClass: "",
+      },
+      modalJSON: {
+        mask: true,
+        closable: true,
+        keyboard: true,
+        title: true,
+        maskStyle: {},
+        cancelText: "关闭",
+        okText: "确定",
+        okType: "primary",
+        footer: true,
+        visible: false,
+        wrapClassName: "",
+        zIndex: 100,
+        destroyOnClose: true,
+        dialogStyle: {
+          width: "50%",
+        },
+        dialogClass: "",
+      },
+      importMonacoOptions: {
+        value: "", // 编缉器的值
+        language: "json",
+        theme: "vs-dark", // 编缉器主题
+        roundedSelection: true, // 右侧不显示编缉预览框
+        autoIndent: true, // 自动缩进
+        automaticLayout: true, //编辑器自适应布局
+        formatOnPaste: true, //复制粘贴的时候格式化
+        formatOnType: true
+      },
+      JSONMonacoOptions: {
+        value: "", // 编缉器的值
+        language: "json",
+        theme: "vs-dark", // 编缉器主题
+        roundedSelection: true, // 右侧不显示编缉预览框
+        autoIndent: true, // 自动缩进
+        automaticLayout: true, //编辑器自适应布局
+        formatOnPaste: true, //复制粘贴的时候格式化
+        formatOnType: true
       },
       isFooter: false,
     };
@@ -401,6 +500,15 @@ export default {
     modalOkPreview() {},
     modalOkImport() {
       this.modalImport.visible = false;
+      this.form.draggable.list = this.$refs.importMonaco.getVal();
+    },
+    exportData() {
+      this.$tools.exportData(this.$refs.monacoJSON.getVal(), 'demo.json');
+    },
+    copyData() {  // 复制数据
+      this.$tools.copyText(this.$refs.monacoJSON.getVal(), () =>{
+        this.$message.success('复制成功');
+      });
     },
     operation(e) {
       let className = e.currentTarget.className;
@@ -410,6 +518,14 @@ export default {
         this.modalClear.visible = true;
       } else if (className.indexOf("operation-ul-lead") !== -1) {
         this.modalImport.visible = true;
+        this.$nextTick(() => {  // 页面渲染完成后执行
+          this.$refs.importMonaco.setVal(this.collapse.panel[0].draggable.list);
+        });
+      } else if (className.indexOf("operation-ul-json") !== -1) {
+        this.modalJSON.visible = true;
+        this.$nextTick(() => {  // 页面渲染完成后执行
+          this.$refs.monacoJSON.setVal(this.collapse.panel[0].draggable);
+        });
       }
     },
   },
@@ -419,6 +535,7 @@ export default {
     DOperation: () => import("@/components/DOperation/index.vue"),
     DFormProperty: () => import("@/components/DFormProperty/index.vue"),
     Modal: () => import("@/components/Common/modal.vue"),
+    Monaco: () => import("@/components/Common/monaco.vue"),
     FormItem: () => import("@/components/DFormItem/index.vue"),
   },
 };

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Button, Form, Input, Radio, Dropdown, Menu, Icon, TreeSelect, Cascader, Select, Divider, Collapse, Tabs, InputNumber, Checkbox, Tooltip, Modal, Upload} from 'ant-design-vue';
+import { Button, Form, Input, Radio, Dropdown, Menu, Icon, TreeSelect, Cascader, Select, Divider, Collapse, Tabs, InputNumber, Checkbox, Tooltip, Modal, Upload, message} from 'ant-design-vue';
 Vue.component(Button.name, Button);
 Vue.component(Form.name, Form);
 Vue.component(Form.Item.name, Form.Item);
@@ -26,7 +26,7 @@ Vue.component(Checkbox.Group.name, Checkbox.Group);
 Vue.component(Tooltip.name, Tooltip);
 Vue.component(Upload.name, Upload);
 Vue.use(Modal);
-
+Vue.prototype.$message = message;
 const MyIcon = Icon.createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_2722107_40tpn12xd4q.js', // 在 iconfont.cn 上生成
 });
